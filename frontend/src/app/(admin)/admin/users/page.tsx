@@ -1,10 +1,12 @@
-export default function AdminUsersPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold">ユーザー管理</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Task 5 でアカウント発行と無効化を実装します。
-      </p>
-    </div>
-  );
+import { requireAdmin } from "@/features/auth/servers/redirect.server";
+import { AdminUsersTable } from "@/features/users/components/client/AdminUsersTable";
+import { listUsersQuery } from "@/features/users/services/user.service";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminUsersPage() {
+  await requireAdmin();
+  const initialUsers = await listUsersQuery();
+
+  return <AdminUsersTable initialUsers={initialUsers} />;
 }
