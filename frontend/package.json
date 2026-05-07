@@ -1,0 +1,46 @@
+{
+  "name": "@kintaiapp/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:seed:admin": "tsx scripts/seed-initial-admin.ts"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "latest",
+    "better-auth": "^1.6.9",
+    "class-variance-authority": "latest",
+    "clsx": "latest",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "latest",
+    "lucide-react": "latest",
+    "next": "latest",
+    "pg": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwind-merge": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "latest",
+    "@tailwindcss/postcss": "latest",
+    "@types/node": "latest",
+    "@types/pg": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "latest",
+    "drizzle-kit": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest",
+    "tsx": "^4.21.0",
+    "typescript": "latest"
+  }
+}

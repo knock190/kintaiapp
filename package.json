@@ -1,0 +1,14 @@
+{
+  "name": "kintaiapp",
+  "private": true,
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "dev": "pnpm --dir frontend dev",
+    "build": "pnpm --dir frontend build",
+    "lint": "pnpm --dir frontend lint",
+    "format": "pnpm --dir frontend format",
+    "db:generate": "pnpm --dir frontend db:generate",
+    "db:migrate": "pnpm --dir frontend db:migrate",
+    "db:studio": "pnpm --dir frontend db:studio"
+  }
+}
