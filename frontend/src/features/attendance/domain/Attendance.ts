@@ -129,6 +129,15 @@ export class Attendance {
     this.validateConsistency();
   }
 
+  reset() {
+    this.props.clockIn = null;
+    this.props.clockOut = null;
+    this.props.awayPeriods = [];
+    this.props.status = "off";
+    this.touch();
+    this.validateConsistency();
+  }
+
   update(params: {
     clockIn?: ClockInDTO | null;
     clockOut?: ClockOutDTO | null;

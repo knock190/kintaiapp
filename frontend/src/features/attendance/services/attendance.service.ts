@@ -1,15 +1,18 @@
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 
 import { db } from "@/external/db";
 import {
   attendances,
   awayPeriods as awayPeriodsTable,
+  users,
 } from "@/external/db/schema";
 import type {
   AttendanceDTO,
+  AttendanceListItemDTO,
   ClockInStyle,
   ClockOutStyle,
   UpdateAttendanceInput,
+  UserSummaryDTO,
 } from "@/external/dto/attendance.dto";
 import {
   Attendance,
@@ -200,5 +203,83 @@ export async function updateMyAttendanceCommand(
       clockOut: input.clockOut,
       awayPeriods: input.awayPeriods,
     });
+  });
+}
+
+function toUserSummary(user: typeof users.$inferSelect): UserSummaryDTO {
+  return {
+    id: user.id,
+    employeeId: user.employeeId,
+    name: user.name,
+    role: user.role === "admin" ? "admin" : "member",
+  };
+}
+
+export async function listAttendancesQuery(
+  date: string,
+): Promise<AttendanceListItemDTO[]> {
+  const activeUsers = await db.query.users.findMany({
+    where: isNull(users.deactivatedAt),
+    orderBy: [asc(users.employeeId)],
+  });
+
+  if (activeUsers.length === 0) {
+    return [];
+  }
+
+  const userIds = activeUsers.map((user) => user.id);
+  const dayAttendances = await db.query.attendances.findMany({
+    where: and(
+      inArray(attendances.userId, userIds),
+      eq(attendances.attendanceDate, date),
+    ),
+  });
+
+  const attendanceIds = dayAttendances.map((attendance) => attendance.id);
+  const periods =
+    attendanceIds.length === 0
+      ? []
+      : await db.query.awayPeriods.findMany({
+          where: inArray(awayPeriodsTable.attendanceId, attendanceIds),
+        });
+
+  const periodsByAttendance = new Map<string, typeof periods>();
+  for (const period of periods) {
+    const list = periodsByAttendance.get(period.attendanceId) ?? [];
+    list.push(period);
+    periodsByAttendance.set(period.attendanceId, list);
+  }
+
+  const attendanceByUser = new Map<string, AttendanceDTO>();
+  for (const attendance of dayAttendances) {
+    const userPeriods = periodsByAttendance.get(attendance.id) ?? [];
+    attendanceByUser.set(
+      attendance.userId,
+      serializeAttendance(attendance, userPeriods),
+    );
+  }
+
+  return activeUsers.map((user) => ({
+    user: toUserSummary(user),
+    attendance: attendanceByUser.get(user.id) ?? null,
+  }));
+}
+
+export async function updateUserAttendanceCommand(
+  userId: string,
+  input: UpdateAttendanceInput,
+) {
+  return mutateAttendance(userId, input.date, (attendance) => {
+    attendance.update({
+      clockIn: input.clockIn,
+      clockOut: input.clockOut,
+      awayPeriods: input.awayPeriods,
+    });
+  });
+}
+
+export async function resetUserAttendanceCommand(userId: string, date: string) {
+  return mutateAttendance(userId, date, (attendance) => {
+    attendance.reset();
   });
 }

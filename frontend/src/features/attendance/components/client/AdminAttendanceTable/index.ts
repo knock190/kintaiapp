@@ -1,0 +1,1 @@
+export { AdminAttendanceTable } from "./AdminAttendanceTable";

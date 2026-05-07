@@ -26,6 +26,7 @@ type AttendanceEditDialogProps = {
   isPending: boolean;
   onClose: () => void;
   onSave: (input: UpdateAttendanceInput) => void;
+  targetLabel?: string;
 };
 
 export function AttendanceEditDialog({
@@ -34,6 +35,7 @@ export function AttendanceEditDialog({
   isPending,
   onClose,
   onSave,
+  targetLabel,
 }: AttendanceEditDialogProps) {
   const [clockInAt, setClockInAt] = useState("");
   const [clockInStyle, setClockInStyle] = useState<ClockInStyle>("office");
@@ -124,7 +126,9 @@ export function AttendanceEditDialog({
       <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-md bg-card p-6 shadow-lg">
         <div className="flex items-start justify-between gap-6">
           <div>
-            <h2 className="text-xl font-semibold">打刻情報修正</h2>
+            <h2 className="text-xl font-semibold">
+              {targetLabel ? `打刻情報を修正 - ${targetLabel}` : "打刻情報修正"}
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               {attendance.date}
             </p>

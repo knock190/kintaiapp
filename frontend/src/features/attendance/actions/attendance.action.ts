@@ -3,17 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import type { AttendanceDTO } from "@/external/dto/attendance.dto";
+import type {
+  AttendanceDTO,
+  AttendanceListItemDTO,
+} from "@/external/dto/attendance.dto";
 import { AttendanceDomainError } from "@/features/attendance/domain/Attendance";
 import {
   clockInCommand,
   clockOutCommand,
   getMyAttendanceQuery,
+  listAttendancesQuery,
   markAwayCommand,
   markBackCommand,
+  resetUserAttendanceCommand,
   updateMyAttendanceCommand,
+  updateUserAttendanceCommand,
 } from "@/features/attendance/services/attendance.service";
-import { getAuthenticatedSessionServer } from "@/features/auth/servers/redirect.server";
+import {
+  getAuthenticatedSessionServer,
+  requireAdmin,
+} from "@/features/auth/servers/redirect.server";
 import { getJstDateString } from "@/shared/lib/datetime";
 import type { ActionResult } from "@/shared/types/action-result";
 import { err, ok } from "@/shared/types/action-result";
@@ -35,8 +44,7 @@ const getMyAttendanceInputSchema = z.object({
   date: dateSchema.optional(),
 });
 
-const updateMyAttendanceInputSchema = z.object({
-  date: dateSchema,
+const updateAttendancePayloadSchema = z.object({
   clockIn: z
     .object({
       at: isoDateTimeSchema,
@@ -62,7 +70,25 @@ const updateMyAttendanceInputSchema = z.object({
     .optional(),
 });
 
-function toActionError(error: unknown): ActionResult<AttendanceDTO> {
+const updateMyAttendanceInputSchema = updateAttendancePayloadSchema.extend({
+  date: dateSchema,
+});
+
+const listAttendancesInputSchema = z.object({
+  date: dateSchema,
+});
+
+const updateUserAttendanceInputSchema = updateAttendancePayloadSchema.extend({
+  userId: z.string().min(1),
+  date: dateSchema,
+});
+
+const resetUserAttendanceInputSchema = z.object({
+  userId: z.string().min(1),
+  date: dateSchema,
+});
+
+function toActionError<T>(error: unknown): ActionResult<T> {
   if (error instanceof AttendanceDomainError) {
     return err(error.code, error.message);
   }
@@ -166,6 +192,58 @@ export async function updateMyAttendanceCommandAction(
     const session = await getAuthenticatedSessionServer();
     const parsed = updateMyAttendanceInputSchema.parse(input);
     const attendance = await updateMyAttendanceCommand(session.user.id, parsed);
+    revalidateAttendancePaths();
+
+    return ok(attendance);
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function listAttendancesAction(
+  input: unknown,
+): Promise<ActionResult<AttendanceListItemDTO[]>> {
+  try {
+    await requireAdmin();
+    const parsed = listAttendancesInputSchema.parse(input);
+    const items = await listAttendancesQuery(parsed.date);
+
+    return ok(items);
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function updateUserAttendanceAction(
+  input: unknown,
+): Promise<ActionResult<AttendanceDTO>> {
+  try {
+    await requireAdmin();
+    const parsed = updateUserAttendanceInputSchema.parse(input);
+    const attendance = await updateUserAttendanceCommand(parsed.userId, {
+      date: parsed.date,
+      clockIn: parsed.clockIn,
+      clockOut: parsed.clockOut,
+      awayPeriods: parsed.awayPeriods,
+    });
+    revalidateAttendancePaths();
+
+    return ok(attendance);
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function resetUserAttendanceAction(
+  input: unknown,
+): Promise<ActionResult<AttendanceDTO>> {
+  try {
+    await requireAdmin();
+    const parsed = resetUserAttendanceInputSchema.parse(input);
+    const attendance = await resetUserAttendanceCommand(
+      parsed.userId,
+      parsed.date,
+    );
     revalidateAttendancePaths();
 
     return ok(attendance);

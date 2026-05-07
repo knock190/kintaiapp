@@ -40,3 +40,15 @@ export type UpdateAttendanceInput = {
     endedAt: string;
   }>;
 };
+
+export type UserSummaryDTO = {
+  id: string;
+  employeeId: string;
+  name: string;
+  role: "member" | "admin";
+};
+
+export type AttendanceListItemDTO = {
+  user: UserSummaryDTO;
+  attendance: AttendanceDTO | null;
+};
