@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "latest",
+    "@tanstack/react-query": "^5.100.9",
     "better-auth": "^1.6.9",
     "class-variance-authority": "latest",
     "clsx": "latest",
