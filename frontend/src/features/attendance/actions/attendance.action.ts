@@ -7,6 +7,15 @@ import type {
   AttendanceDTO,
   AttendanceListItemDTO,
 } from "@/external/dto/attendance.dto";
+import {
+  clockInInputSchema,
+  clockOutInputSchema,
+  getMyAttendanceInputSchema,
+  listAttendancesInputSchema,
+  resetUserAttendanceInputSchema,
+  updateMyAttendanceInputSchema,
+  updateUserAttendanceInputSchema,
+} from "@/features/attendance/actions/attendance.schemas";
 import { AttendanceDomainError } from "@/features/attendance/domain/Attendance";
 import {
   clockInCommand,
@@ -26,67 +35,6 @@ import {
 import { getJstDateString } from "@/shared/lib/datetime";
 import type { ActionResult } from "@/shared/types/action-result";
 import { err, ok } from "@/shared/types/action-result";
-
-const dateSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, "日付形式が正しくありません。");
-const isoDateTimeSchema = z.string().datetime();
-
-const clockInInputSchema = z.object({
-  style: z.enum(["office", "remote", "direct_visit"]),
-});
-
-const clockOutInputSchema = z.object({
-  style: z.enum(["normal", "direct_return"]),
-});
-
-const getMyAttendanceInputSchema = z.object({
-  date: dateSchema.optional(),
-});
-
-const updateAttendancePayloadSchema = z.object({
-  clockIn: z
-    .object({
-      at: isoDateTimeSchema,
-      style: z.enum(["office", "remote", "direct_visit"]),
-    })
-    .nullable()
-    .optional(),
-  clockOut: z
-    .object({
-      at: isoDateTimeSchema,
-      style: z.enum(["normal", "direct_return"]),
-    })
-    .nullable()
-    .optional(),
-  awayPeriods: z
-    .array(
-      z.object({
-        id: z.string().uuid().optional(),
-        startedAt: isoDateTimeSchema,
-        endedAt: isoDateTimeSchema,
-      }),
-    )
-    .optional(),
-});
-
-const updateMyAttendanceInputSchema = updateAttendancePayloadSchema.extend({
-  date: dateSchema,
-});
-
-const listAttendancesInputSchema = z.object({
-  date: dateSchema,
-});
-
-const updateUserAttendanceInputSchema = updateAttendancePayloadSchema.extend({
-  userId: z.string().min(1),
-  date: dateSchema,
-});
-
-const resetUserAttendanceInputSchema = z.object({
-  userId: z.string().min(1),
-  date: dateSchema,
-});
 
 function toActionError<T>(error: unknown): ActionResult<T> {
   if (error instanceof AttendanceDomainError) {
