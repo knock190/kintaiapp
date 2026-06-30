@@ -1,33 +1,33 @@
 # kintaiapp
 
-勤怠管理アプリ
+社内のチャットで行っている勤怠報告を置き換える、Web ベースの勤怠管理アプリ。メンバーがブラウザから出勤・退勤・離業を打刻し、管理者がリアルタイムで全員の勤怠を確認・修正できる。
 
-## 環境変数
+- 技術スタック: Next.js (App Router) / TypeScript / Better Auth / Drizzle / TanStack Query / Tailwind + shadcn/ui
+- インフラ: Neon (Postgres) / Cloud Run / Docker Compose（開発）
 
-`.env.example` をもとに設定します。Cloud Run では Secret Manager かサービス環境変数で同じ値を注入します。
+セットアップ手順は [doc/09-setup.md](doc/09-setup.md) を参照。
 
-| 変数 | 用途 |
-| --- | --- |
-| `DATABASE_URL` | Postgres 接続文字列。開発は Docker Compose、本番は Neon の接続文字列 |
-| `BETTER_AUTH_SECRET` | Better Auth の署名秘密鍵。32 文字以上のランダム値 |
-| `BETTER_AUTH_URL` | アプリの公開 URL。Cloud Run デプロイ後の HTTPS URL |
-| `INITIAL_ADMIN_EMPLOYEE_ID` | 初期管理者 seed 用の社員 ID |
-| `INITIAL_ADMIN_NAME` | 初期管理者 seed 用の名前 |
-| `INITIAL_ADMIN_PASSWORD` | 初期管理者 seed 用の初期パスワード |
-| `PORT` | Next.js 起動ポート。Cloud Run は `8080` |
+## ドキュメント
 
-## 本番準備
+### プロジェクト仕様（[doc/](doc/)）
 
-Cloud Run へデプロイする前に、Neon の `DATABASE_URL` を設定した状態でマイグレーションと初期管理者 seed を実行します。
+- [01. 要件定義](doc/01-requirements.md)
+- [02. ユースケース](doc/02-usecase.md)
+- [03. ユビキタス言語](doc/03-ubiquitous-language.md)
+- [04. ドメイン設計](doc/04-domain-design.md)
+- [05. 画面設計](doc/05-screen-design.md)
+- [06. データベース設計](doc/06-database-design.md)
+- [07. API 設計](doc/07-api-design.md)
+- [08. 残課題メモ](doc/08-open-issues.md)
+- [09. セットアップ / 本番準備](doc/09-setup.md)
 
-```bash
-pnpm --dir frontend db:migrate
-pnpm --dir frontend db:seed:admin
-```
+### フロントエンド実装ガイド（[frontend/doc/](frontend/doc/)）
 
-コンテナはルートの `Dockerfile` でビルドできます。
-
-```bash
-docker build -t kintaiapp .
-docker run --env-file .env -p 8080:8080 kintaiapp
-```
+- [01. 技術構成](frontend/doc/01-tech-stack.md)
+- [02. アーキテクチャ設計](frontend/doc/02-architecture.md)
+- [03. App Router 設計ガイド](frontend/doc/03-app-router-guide.md)
+- [04. Features ディレクトリ設計](frontend/doc/04-features-design.md)
+- [05. External Layer（外部連携層）](frontend/doc/05-external-layer.md)
+- [06. TanStack Query 実装ガイド](frontend/doc/06-tanstack-query-guide.md)
+- [07. 認証設計](frontend/doc/07-auth-guide.md)
+- [08. 開発ガイド](frontend/doc/08-develop-guide.md)
