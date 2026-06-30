@@ -5,7 +5,7 @@
 - 技術スタック: Next.js (App Router) / TypeScript / Better Auth / Drizzle / TanStack Query / Tailwind + shadcn/ui
 - インフラ: Neon (Postgres) / Cloud Run / Docker Compose（開発）
 
-セットアップ手順は [doc/09-setup.md](doc/09-setup.md) を参照。
+
 
 ## ドキュメント
 
@@ -19,7 +19,7 @@
 - [06. データベース設計](doc/06-database-design.md)
 - [07. API 設計](doc/07-api-design.md)
 - [08. 残課題メモ](doc/08-open-issues.md)
-- [09. セットアップ / 本番準備](doc/09-setup.md)
+
 
 ### フロントエンド実装ガイド（[frontend/doc/](frontend/doc/)）
 
