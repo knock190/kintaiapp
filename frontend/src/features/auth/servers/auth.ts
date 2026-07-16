@@ -23,6 +23,9 @@ const authOptions = {
     disableSignUp: true,
   },
   disabledPaths: ["/sign-up/email"],
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
+  },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path !== "/sign-in/email") {
