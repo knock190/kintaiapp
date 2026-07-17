@@ -8,6 +8,21 @@ import { eq } from "drizzle-orm";
 import { db } from "@/external/db";
 import * as schema from "@/external/db/schema";
 
+function resolveTrustedOrigins(): string[] {
+  const fromEnv =
+    process.env.TRUSTED_ORIGINS?.split(",")
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0) ?? [];
+
+  const origins = new Set(fromEnv);
+
+  if (process.env.NODE_ENV !== "production") {
+    origins.add("http://localhost:3000");
+  }
+
+  return Array.from(origins);
+}
+
 const authOptions = {
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -18,6 +33,7 @@ const authOptions = {
     process.env.BETTER_AUTH_SECRET ??
     "development-secret-change-me-at-least-32-characters",
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  trustedOrigins: resolveTrustedOrigins(),
   emailAndPassword: {
     enabled: true,
     disableSignUp: true,
