@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { GuestLoginButtons } from "@/features/auth/components/client/GuestLoginButtons";
 import { Header } from "@/shared/ui/Header";
 
 export default function HomePage() {
@@ -13,20 +14,16 @@ export default function HomePage() {
         <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
           出退勤の打刻、離業、勤怠の確認・修正までを 1 つの画面で行えます。
         </p>
-        <div className="mt-8 flex gap-3">
-          <Link
-            href="/member/dashboard"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-          >
-            メンバー画面
-          </Link>
-          <Link
-            href="/admin/dashboard"
-            className="rounded-md border px-4 py-2 text-sm font-medium"
-          >
-            管理者画面
-          </Link>
+        <div className="mt-8 max-w-md">
+          <GuestLoginButtons />
         </div>
+        <p className="mt-6 text-sm text-muted-foreground">
+          社員アカウントをお持ちの方は{" "}
+          <Link className="underline" href="/login">
+            ログイン画面
+          </Link>{" "}
+          からお進みください。
+        </p>
       </section>
     </>
   );

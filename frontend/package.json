@@ -13,7 +13,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:seed:admin": "tsx scripts/seed-initial-admin.ts"
+    "db:seed:admin": "tsx scripts/seed-initial-admin.ts",
+    "db:seed:guests": "tsx scripts/seed-guest-users.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "latest",

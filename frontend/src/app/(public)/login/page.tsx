@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { db } from "@/external/db";
 import { users } from "@/external/db/schema";
+import { GuestLoginButtons } from "@/features/auth/components/client/GuestLoginButtons";
 import { LoginForm } from "@/features/auth/components/client/LoginForm";
 import { auth } from "@/features/auth/servers/auth";
 
@@ -48,6 +49,9 @@ export default async function LoginPage() {
           </p>
         </div>
         <LoginForm />
+        <div className="border-t pt-6">
+          <GuestLoginButtons />
+        </div>
       </div>
     </div>
   );
