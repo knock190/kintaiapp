@@ -7,6 +7,8 @@
     "build": "pnpm --dir frontend build",
     "lint": "pnpm --dir frontend lint",
     "format": "pnpm --dir frontend format",
+    "typecheck": "pnpm --dir frontend typecheck",
+    "test": "pnpm --dir frontend test",
     "db:generate": "pnpm --dir frontend db:generate",
     "db:migrate": "pnpm --dir frontend db:migrate",
     "db:studio": "pnpm --dir frontend db:studio"

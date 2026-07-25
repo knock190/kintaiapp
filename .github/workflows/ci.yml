@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: lint / typecheck / test / build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (biome)
+        run: pnpm --dir frontend lint
+
+      - name: Typecheck (tsc)
+        run: pnpm --dir frontend typecheck
+
+      - name: Unit tests (vitest)
+        run: pnpm --dir frontend test
+
+      - name: Build (next build)
+        run: pnpm --dir frontend build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
